@@ -1,8 +1,1 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
-}
+@import url(http://fonts.googleapis.com/css?family=Roboto);body{font-family:'Roboto', sans-serif;background-color:#F8F8F8}#title{margin:25px 0px}#map{height:560px}#debug{margin:15px 0px}.hidden{visibility:hidden}#transmitter{margin-bottom:0px}
