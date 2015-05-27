@@ -3,25 +3,51 @@ extends layout
 block head
   meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
   link(rel='stylesheet', href='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css')
+  link(rel='stylesheet', href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css')
   link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
+  link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
 
 block content
-  div(class='container')
-    h1(id='title') geoPlots Prototype
+  nav(class='navbar navbar-default')
+    div(class='container')
+      div(class='navbar-header')
+        a(class='navbar-brand' href='#') geoPlots
+      ul(class='nav navbar-nav')
+        li(id='display-visits' class='active')
+          a(href='#') Visits
+        li(id='display-transmitters')
+          a(href='#') Transmitters
+      button(id='reset' type='button' class='btn btn-warning navbar-btn hidden pull-right') Reset
+
+  div(id='content' class='container')
     div(class='row')
       div(class='col-lg-12')
         div(id='map')
-    div(class='row')
+        div(id='load' class='hide')
+          i(class='fa fa-spinner fa-pulse fa-3x')
+          div(id='load-bg')
+    div(class='row chart-display')
       div(class='col-lg-12')
-        div(id='debug')
-    div(class='row')
-      div(class='col-lg-12')
-        button(id='reset' type='button' class='btn btn-default hidden') Reset Map
+        svg(class='chart')
+        div(id='load-chart' class='hide')
+          i(class='fa fa-spinner fa-pulse fa-3x')
+          div(id='load-bg')
+    div(id='debug' class='row')
+      div(class='col-lg-8')
+        div(id='debug-text')
+          small(id='timestamp')
+          p(id='transmitter')
 
   script(src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js')
+  script(src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js')
   script(src='http://d3js.org/d3.v3.min.js')
   script(src='http://d3js.org/queue.v1.min.js')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
   script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')
+
+  script(src='/javascripts/navigation.js')
   script(src='/javascripts/render_transmitters.js')
+  script(src='/javascripts/render_visits_barchart.js')
+  script(src='/javascripts/render_transmitter_visits_barchart.js')
+  script(src='/javascripts/render_visits_map.js')

@@ -2,25 +2,106 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #F8F8F8;
+  background-color: #fcfcfc;
 }
 
-#title {
-  margin: 25px 0px;
+.navbar-brand {
+  color: #4E9A06 !important;
+}
+
+#content {
+  margin-top: 25px;
 }
 
 #map { 
   height: 560px;
 }
 
+#load {
+  .hide {
+    display: none;
+  }
+
+  i {
+    position: absolute;
+    left: 48%;
+    top: 48%;
+  }
+
+  #load-bg {
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 1140px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+}
+
+#load-chart {
+  .hide {
+    display: none;
+  }
+
+  i {
+    position: absolute;
+    left: 48%;
+    top: 36%;
+  }
+
+  #load-bg {
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 1140px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+}
+
+.chart-display {
+  margin-top: 10px;
+}
+
+.chart {
+  .bar {
+    fill: #e5e5e5;
+
+    &:hover {
+      fill: #cccccc;
+    }
+  }
+
+  .selected {
+    fill: #4E9A06;
+  }
+
+  .axis {
+    text {
+      font: 10px sans-serif;
+    }
+
+    path, line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+  #labels {
+    text {
+      color: #4E9A06;
+      font: 10px sans-serif;
+    }
+  }
+}
+
 #debug {
-  margin: 15px 0px;
+  margin-top: 15px;
 }
 
 .hidden {
   visibility: hidden;
-}
-
-#transmitter {
-  margin-bottom: 0px;
 }
