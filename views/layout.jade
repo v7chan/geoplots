@@ -2,6 +2,40 @@ doctype html
 html
   head
     title= title
-    block head
+    meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+    link(rel='stylesheet', href='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css')
+    link(rel='stylesheet', href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/chosen/chosen.css')
   body
+    nav(class='navbar navbar-default')
+      div(class='container')
+        div(class='navbar-header')
+          a(class='navbar-brand' href='#') geoPlots
+        ul(class='nav navbar-nav')
+          li(id='display-paths')
+            a(href='#') Paths
+          li(id='display-visits' class='active')
+            a(href='#') Visits
+          li(id='display-transmitters')
+            a(href='#') Transmitters
+        button(id='reset' type='button' class='btn btn-warning navbar-btn hidden pull-right') Reset
+
     block content
+
+    script(src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js')
+    script(src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js')
+    script(src='http://d3js.org/d3.v3.min.js')
+    script(src='/javascripts/cubehelix.js')
+    script(src='http://d3js.org/queue.v1.min.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+    script(src='/chosen/chosen.jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')
+
+    script(src='/javascripts/navigation.js')
+    script(src='/javascripts/render_transmitters.js')
+    script(src='/javascripts/render_visits_barchart.js')
+    script(src='/javascripts/render_visits_map.js')
+    script(src='/javascripts/render_paths.js')

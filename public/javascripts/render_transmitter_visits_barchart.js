@@ -23,7 +23,7 @@ function chartDailyVisitsForTransmitter(transmitter_id) {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var visitsJSON = 'http://localhost:3000/transmitters_visit?transmitter=' + transmitter_id;
+  var visitsJSON = 'http://localhost:3000/daily_visits?transmitter=' + transmitter_id;
   var timeStart = $.now();
 
   d3.json(visitsJSON, function(error, data) {
@@ -87,7 +87,7 @@ function chartHourlyVisits(transmitter_id, date) {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var visitsJSON = 'http://localhost:3000/transmitters_visit_hourly?transmitter=' + transmitter_id + '&date=' + date;
+  var visitsJSON = 'http://localhost:3000/hourly_visits?transmitter=' + transmitter_id + '&date=' + date;
   var timeStart = $.now();
 
   d3.json(visitsJSON, function(error, data) {

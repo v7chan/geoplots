@@ -24,10 +24,6 @@ function buildMap() {
   return map;
 }
 
-function initializeVisitsView() {
-  displayVisitsChart();
-}
-
 function listenForNavigationEvents() {
   $('#display-visits').click(function() {
     $('.active').removeClass('active');
@@ -35,6 +31,14 @@ function listenForNavigationEvents() {
 
     clearView();
     initializeVisitsView();
+  });
+
+  $('#display-paths').click(function() {
+    $('.active').removeClass('active');
+    $(this).addClass('active');
+
+    clearView();
+    initializePathsView();
   });
 
   $('#display-transmitters').click(function() {
@@ -46,9 +50,47 @@ function listenForNavigationEvents() {
   });
 }
 
-function listenForReset() {
-  $('#reset').click(function() {
-    location.reload();
+function initializeVisitsView() {
+  displayTransmitters('small');
+  displayVisitsChart();
+}
+
+function initializePathsView() {
+  var receiversArray = [];
+
+  $('#receiver-input').keypress(function(event) {
+    if(event.which == 13) {
+      event.preventDefault();
+
+      if($(this).val()) {
+        displayPaths($(this).val());
+      }
+      else {
+        displayPaths(27617314);
+      }
+    }
+  });
+
+  $('#receiver-input-submit').click(function() {
+    if($('#receiver-input').val()) {
+      displayPaths($('#receiver-input').val());
+    }
+    else {
+      displayPaths(27617314);
+    }
+  });
+
+  $('#random').click(function() {
+    displayPaths(receiversArray[Math.floor(Math.random()*receiversArray.length)]);
+  });
+
+  $.getJSON('/data/visitors.json', function(data) {
+    $.each(data, function(idx, val) {
+      receiversArray.push(val);
+    });
+
+    displayPathsLegend();
+    $('#paths-control').removeClass('hide');
   });
 }
 
@@ -59,8 +101,14 @@ function displayData(dataLayer) {
   hideSpinner();
 }
 
-function clearMap() {
-  visualizationsLayer.clearLayers();
+function displayMultiData(dataLayer) {
+  visualizationsLayer.addLayer(dataLayer);
+}
+
+function listenForReset() {
+  $('#reset').click(function() {
+    location.reload();
+  });
 }
 
 function clearView() {
@@ -68,7 +116,15 @@ function clearView() {
   $('#transmitter').html('');
   $('.chart').empty();
   $('.chart').attr('height', '0');
+  $('#paths-control').addClass('hide');
+  $('#legend-text-start').html('Start');
+  $('#legend-text-duration').html('');
+  $('#legend-text-end').html('End');
   clearMap();
+}
+
+function clearMap() {
+  visualizationsLayer.clearLayers();
 }
 
 function showSpinner() {

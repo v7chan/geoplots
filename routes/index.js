@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+var async = require('async');
 var pg = require('pg');
 var conString = "postgres://geoplots:geoplots@127.0.0.1/geoplots"
 var client = new pg.Client(conString);
@@ -81,7 +82,7 @@ router.get('/visits_per_transmitter', function (req, res) {
   });
 });
 
-router.get('/transmitters_visit', function (req, res) {
+router.get('/daily_visits', function (req, res) {
   transmitter_id = req.query.transmitter;
 
   var query = client.query("SELECT to_char(start_time, 'YYYY-MM-DD') as date, COUNT(gid) as visits FROM beacon_analytics "
@@ -97,7 +98,7 @@ router.get('/transmitters_visit', function (req, res) {
   });
 });
 
-router.get('/transmitters_visit_hourly', function (req, res) {
+router.get('/hourly_visits', function (req, res) {
   transmitter_id = req.query.transmitter;
   date = req.query.date;
 
@@ -121,5 +122,116 @@ router.get('/transmitters_visit_hourly', function (req, res) {
   });
 });
 
+router.get('/paths', function (req, res) {
+  receiver_id = req.query.receiver;
+
+  var query = client.query("SELECT visits.transmitter_id, visits.start_time, visits.end_time, visits.dwell_time, ST_Y(t.coordinates) as lat, ST_X(t.coordinates) as lon "
+    + "FROM (SELECT transmitter_id, start_time, end_time, dwell_time FROM beacon_analytics WHERE receiver_id = " + receiver_id + " ORDER BY start_time asc) as visits "
+    + "JOIN transmitters as t "
+    + "ON visits.transmitter_id = t.transmitter_id;");
+
+  query.on("row", function (row, result) {
+    result.addRow(row);
+  });
+
+  query.on("end", function (result) {
+    var data = result.rows;
+    var paths = [];
+    var currentPath = [];
+    var dateRange = {
+      start: data[0].start_time,
+      end: data[data.length - 1].end_time
+    }
+    currentPath.push([data[0].lat, data[0].lon]);
+
+    async.forEachOfSeries(data, function (value, key, callback) {
+      // handle last element; STAHP!
+      if((parseInt(key) + 1) == data.length) {
+        var transmitter1 = value,
+            transmitter2 = value;
+      }
+      else {
+        var transmitter1 = value,
+            transmitter2 = data[parseInt(key) + 1];
+      }
+
+      var transmitter1Id = transmitter1.transmitter_id,
+          transmitter2Id = transmitter2.transmitter_id;
+
+      var transmitterPair;
+
+      if(transmitter1Id < transmitter2Id) {
+        transmitterPair = transmitter1Id + '_' + transmitter2Id; 
+      }
+      else {
+        transmitterPair = transmitter2Id + '_' + transmitter1Id; 
+      }
+
+      var arrival = new Date(transmitter2.start_time),
+           depart = new Date(transmitter1.start_time);
+      var travelTime = arrival - depart;
+      var travelFactor = 5 * 60 * 1000;
+
+      computeMaxTravelTime(transmitter1Id, transmitter2Id, function(result) {
+        if(result.length != 0) {
+          finishRow(result[0].time_in_seconds * 1000);
+        }
+        else {
+          finishRow(0);
+        }
+      });
+
+      function finishRow(maxTravelTime) {
+        if(maxTravelTime == 0) {
+          callback();
+        }
+        else if(travelTime > (maxTravelTime + travelFactor)) {
+          // add currentPath and start a new path
+          paths.push(currentPath);
+          currentPath = [];
+          currentPath.push([transmitter2.lat, transmitter2.lon]);
+          callback();
+        }
+        else {
+          // add the next transmitter to current path
+          currentPath.push([transmitter2.lat, transmitter2.lon]);
+          callback();
+        }
+      }
+    }, finishRequest);
+    
+    function finishRequest(err) {
+      var response = {
+        dateRange: dateRange,
+        timeSpentMillis: dateRange.end - dateRange.start,
+        paths: paths
+      }
+
+      res.send(response);
+      res.end();
+    }
+  });
+});
+
+function computeMaxTravelTime(transmitter1, transmitter2, callback) {
+  var transmitterPair;
+
+  if(transmitter1 < transmitter2) {
+    transmitterPair = transmitter1.toString() + '_' + transmitter2.toString(); 
+  }
+  else {
+    transmitterPair = transmitter2.toString() + '_' + transmitter1.toString(); 
+  }
+
+  var query = client.query("SELECT time_in_seconds FROM transmitter_distances WHERE transmitter_pair = '" + transmitterPair + "';");
+
+  query.on("row", function (row, result) {
+    result.addRow(row);
+  });
+
+  query.on("end", function (result) {
+    callback(result.rows);
+  });
+}
 
 module.exports = router;

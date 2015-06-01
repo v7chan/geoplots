@@ -1,4 +1,4 @@
-function displayTransmitters() {
+function displayTransmitters(size) {
   var transmittersJSON = 'http://localhost:3000/transmitters';
   showSpinner();
   queue().defer(d3.json, transmittersJSON).await(transmittersReady);
@@ -13,6 +13,11 @@ function displayTransmitters() {
       fillOpacity: 0.5
     };
 
+    if(size == 'small') {
+      markerStyle.radius = 3;
+      markerStyle.fillColor = 'brown';
+    }
+
     var dataLayer = L.geoJson(data, {
       pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, markerStyle);
@@ -24,7 +29,9 @@ function displayTransmitters() {
 
     function listenForEvents(feature, layer) {
       layer.on('click', function (e) {
-        displayVisitsForTransmitter(map, feature.properties.transmitter_id);
+        if(size != 'small') {
+          displayVisitsForTransmitter(map, feature.properties.transmitter_id);
+        }
       });
     }
   }
