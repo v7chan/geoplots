@@ -136,12 +136,16 @@ router.get('/paths', function (req, res) {
 
   query.on("end", function (result) {
     var data = result.rows;
+
     var paths = [];
     var currentPath = [];
+    
     var dateRange = {
       start: data[0].start_time,
       end: data[data.length - 1].end_time
-    }
+    };
+    var dwellEvents = [];
+    
     currentPath.push([data[0].lat, data[0].lon]);
 
     async.forEachOfSeries(data, function (value, key, callback) {
@@ -182,7 +186,20 @@ router.get('/paths', function (req, res) {
       });
 
       function finishRow(maxTravelTime) {
-        if(maxTravelTime == 0) {
+        // last record to process
+        if((parseInt(key) + 1) == data.length) {
+          paths.push(currentPath);
+
+          var dwellEvent = {
+            coordinates: [transmitter1.lat, transmitter1.lon],
+            dwellTimeInMillis: transmitter1.end_time - transmitter1.start_time
+          };
+          dwellEvents.push(dwellEvent);
+
+          callback();
+        }
+        // same transmitter back-to-back, break
+        else if(maxTravelTime == 0) {
           callback();
         }
         else if(travelTime > (maxTravelTime + travelFactor)) {
@@ -190,6 +207,13 @@ router.get('/paths', function (req, res) {
           paths.push(currentPath);
           currentPath = [];
           currentPath.push([transmitter2.lat, transmitter2.lon]);
+
+          var dwellEvent = {
+            coordinates: [transmitter1.lat, transmitter1.lon],
+            dwellTimeInMillis: transmitter1.end_time - transmitter1.start_time
+          };
+          dwellEvents.push(dwellEvent);
+
           callback();
         }
         else {
@@ -204,6 +228,7 @@ router.get('/paths', function (req, res) {
       var response = {
         dateRange: dateRange,
         timeSpentMillis: dateRange.end - dateRange.start,
+        dwellEvents: dwellEvents,
         paths: paths
       }
 

@@ -1,11 +1,14 @@
 var map;
 var visualizationsLayer;
+var dwellEventsLayer;
 
 $(function() {
   map = buildMap();
 
-  initializeVisitsView();
+  displayVisitsView();
+  initializePathsView();
   listenForNavigationEvents(map);
+  listenForReset();
 });
 
 function buildMap() {
@@ -19,7 +22,16 @@ function buildMap() {
   map.fitBounds(bounds);
 
   visualizationsLayer = new L.layerGroup();
+  dwellEventsLayer = new L.layerGroup();
+
   visualizationsLayer.addTo(map);
+  dwellEventsLayer.addTo(map);
+
+  map.on('zoomend', function() {
+    dwellEventsLayer.eachLayer(function(layer) {
+      layer.setRadius(getZoomRadiusForDwellEvents());
+    });
+  });
 
   return map;
 }
@@ -30,7 +42,7 @@ function listenForNavigationEvents() {
     $(this).addClass('active');
 
     clearView();
-    initializeVisitsView();
+    displayVisitsView();
   });
 
   $('#display-paths').click(function() {
@@ -38,7 +50,7 @@ function listenForNavigationEvents() {
     $(this).addClass('active');
 
     clearView();
-    initializePathsView();
+    displayPathsView();
   });
 
   $('#display-transmitters').click(function() {
@@ -48,11 +60,6 @@ function listenForNavigationEvents() {
     clearView();
     displayTransmitters();
   });
-}
-
-function initializeVisitsView() {
-  displayTransmitters('small');
-  displayVisitsChart();
 }
 
 function initializePathsView() {
@@ -88,10 +95,18 @@ function initializePathsView() {
     $.each(data, function(idx, val) {
       receiversArray.push(val);
     });
-
-    displayPathsLegend();
-    $('#paths-control').removeClass('hide');
   });
+}
+
+function displayPathsView() {
+  displayPathsLegend();
+  displayDwellLegend();
+  $('#paths-control').removeClass('hide');
+}
+
+function displayVisitsView() {
+  displayTransmitters('small');
+  displayVisitsChart();
 }
 
 function displayData(dataLayer) {
@@ -105,9 +120,31 @@ function displayMultiData(dataLayer) {
   visualizationsLayer.addLayer(dataLayer);
 }
 
+function displayDwellEventsLayer(dataLayer) {
+  dwellEventsLayer.addLayer(dataLayer);
+}
+
+function getZoomRadiusForDwellEvents() {
+  var currentZoom = map.getZoom();
+  return (currentZoom - 15)*2 + 5;
+}
+
 function listenForReset() {
   $('#reset').click(function() {
-    location.reload();
+    if($('#display-visits').hasClass('active')) {
+      clearView();
+      displayVisitsView();
+    }
+    else if($('#display-paths').hasClass('active')) {
+      clearView();
+      displayPathsView();
+    }
+    else if ($('#display-transmitters').hasClass('active')) {
+      clearView();
+      displayTransmitters();
+    }
+
+    $(this).addClass('hidden');
   });
 }
 
@@ -120,11 +157,15 @@ function clearView() {
   $('#legend-text-start').html('Start');
   $('#legend-text-duration').html('');
   $('#legend-text-end').html('End');
+  $('#legend-dwell-text-short').html('Short');
+  $('#legend-dwell-text-long').html('Long');
+  $('#reset').addClass('hidden');
   clearMap();
 }
 
 function clearMap() {
   visualizationsLayer.clearLayers();
+  dwellEventsLayer.clearLayers();
 }
 
 function showSpinner() {

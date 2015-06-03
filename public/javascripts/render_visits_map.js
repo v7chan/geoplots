@@ -42,8 +42,6 @@ function displayVisitsOnMap(date) {
       });
     }
   }
-
-  listenForReset();
 }
 
 function handleSelectedTransmitter(transmitter_id, classes) {

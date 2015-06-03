@@ -68,6 +68,4 @@ function displayVisitsForTransmitter(map, transmitter_id) {
 
     displayData(dataLayer);
   }
-
-  listenForReset();
 }
