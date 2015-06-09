@@ -105,7 +105,8 @@ function displayPathsView() {
 }
 
 function displayVisitsView() {
-  displayTransmitters('small');
+  $('#chart-group').removeClass('hide');
+  displayChartDwellLegend();
   displayVisitsChart();
 }
 
@@ -153,9 +154,12 @@ function clearView() {
   $('#transmitter').html('');
   $('.chart').empty();
   $('.chart').attr('height', '0');
+
   $('#paths-control').addClass('hide');
+  $('#chart-group').addClass('hide');
+
   $('#legend-text-start').html('Start');
-  $('#legend-text-duration').html('');
+  $('#legend-text-duration').html('Interaction Length');
   $('#legend-text-end').html('End');
   $('#legend-dwell-text-short').html('Short');
   $('#legend-dwell-text-long').html('Long');

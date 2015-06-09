@@ -38,7 +38,7 @@ function displayVisitsChart() {
       .attr('y', 6)
       .attr('dy', '.71em')
       .style('text-anchor', 'end')
-      .text('Visits');
+      .text('Daily Visits');
 
     svg.selectAll('.bar').data(data).enter()
       .append('rect')
@@ -104,7 +104,7 @@ function chartDailyVisitsForTransmitter(transmitter_id) {
       .attr('y', 6)
       .attr('dy', '.71em')
       .style('text-anchor', 'end')
-      .text('Visits');
+      .text('Daily Visits');
 
     svg.selectAll('.bar').data(data).enter()
       .append('rect')
@@ -168,7 +168,7 @@ function chartHourlyVisits(transmitter_id, date) {
       .attr('y', 6)
       .attr('dy', '.71em')
       .style('text-anchor', 'end')
-      .text('Visits');
+      .text('Hourly Visits');
 
     svg.selectAll('.bar').data(data).enter()
       .append('rect')

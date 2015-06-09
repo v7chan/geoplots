@@ -57,10 +57,6 @@ body {
   }
 }
 
-.chart-display {
-  margin-top: 10px;
-}
-
 .chart {
   .bar {
     fill: #e5e5e5;
@@ -99,6 +95,8 @@ body {
 }
 
 #paths-control {
+  margin-top: 20px;
+
   #legend {
     margin-bottom: 5px;
   }
@@ -110,6 +108,18 @@ body {
   #legend-dwell {
     margin-top: 5px;
     margin-bottom: 5px;
+  }
+}
+
+#chart-group {
+  margin-top: 20px;
+
+  #chart-legend-dwell {
+    margin-bottom: 5px;
+  }
+
+  .chart-display {
+    margin-top: 5px;
   }
 }
 

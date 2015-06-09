@@ -8,26 +8,32 @@ block content
         div(id='load' class='hide')
           i(class='fa fa-spinner fa-pulse fa-3x')
           div(id='load-bg')
-    div(class='row chart-display')
-      div(class='col-lg-12')
-        svg(class='chart')
-        div(id='load-chart' class='hide')
-          i(class='fa fa-spinner fa-pulse fa-3x')
-          div(id='load-bg')
+    div(id='chart-group' class='hide')
+      div(id='chart-legend-dwell-group' class='row')
+        div(id='chart-legend-dwell' class='col-lg-12')
+        div(id='chart-legend-dwell-text')
+          small(id='chart-legend-dwell-text-short' class='col-lg-4') 0 minutes
+          small(class='col-lg-4 text-center') Dwell Time Range
+          small(id='chart-legend-dwell-text-long' class='col-lg-4 text-right') 1+ hours
+      div(class='row chart-display')
+        div(class='col-lg-12')
+          svg(class='chart')
+          div(id='load-chart' class='hide')
+            i(class='fa fa-spinner fa-pulse fa-3x')
+            div(id='load-bg')
     div(id='paths-control' class='hide')
-      div(class='row')
+      div(id='legend-timeframe-group' class='row')
         div(id='legend' class='col-lg-12')
         div(id='legend-text')
           small(id='legend-text-start' class='col-lg-4') Start
-          small(id='legend-text-duration' class='col-lg-4 text-center')
+          small(id='legend-text-duration' class='col-lg-4 text-center') Interaction Length
           small(id='legend-text-end' class='col-lg-4 text-right') End
-       div(class='row')
+      div(id='legend-dwell-group' class='row')
         div(id='legend-dwell' class='col-lg-12')
         div(id='legend-dwell-text')
           small(id='legend-dwell-text-short' class='col-lg-4') Short
           small(class='col-lg-4 text-center') Dwell Time Range
           small(id='legend-dwell-text-long' class='col-lg-4 text-right') Long
-
       div(id='paths-control-input' class='row')
         div(class='col-lg-10')
           div(class='input-group')

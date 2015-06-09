@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-
 var async = require('async');
+
 var pg = require('pg');
-var conString = "postgres://geoplots:geoplots@127.0.0.1/geoplots"
-var client = new pg.Client(conString);
+var database_uri = process.env.DATABASE_URL || "postgres://geoplots:geoplots@127.0.0.1/geoplots";
+var client = new pg.Client(database_uri);
 client.connect();
 
 router.get('/', function(req, res) {
@@ -61,16 +61,39 @@ router.get('/visits_per_transmitter', function (req, res) {
       + ", ST_AsGeoJSON(lg.coordinates)::json as geometry "
       + ", row_to_json(lp) as properties "
       + "FROM "
-        + "(SELECT visits.transmitter_id, visits.count, t.coordinates "
-          + "FROM (SELECT transmitter_id, COUNT(gid) as count FROM beacon_analytics WHERE start_time >= '" + begin + "' AND start_time < '" + end + "' GROUP BY transmitter_id) as visits "
+        + "(SELECT visits.transmitter_id, visits.count, visits.dwell, t.coordinates "
+          + "FROM (SELECT transmitter_id, COUNT(gid) as count, AVG(dwell_time) as dwell FROM beacon_analytics WHERE start_time >= '" 
+            + begin + "' AND start_time < '" + end + "' GROUP BY transmitter_id) as visits "
           + "JOIN transmitters as t "
           + "ON visits.transmitter_id = t.transmitter_id) as lg "
         + "INNER JOIN "
-          + "(SELECT visits.transmitter_id, visits.count "
-          + "FROM (SELECT transmitter_id, COUNT(gid) as count FROM beacon_analytics WHERE start_time >= '" + begin + "' AND start_time < '" + end + "' GROUP BY transmitter_id) as visits "
+          + "(SELECT visits.transmitter_id, visits.count, visits.dwell "
+          + "FROM (SELECT transmitter_id, COUNT(gid) as count, AVG(dwell_time) as dwell FROM beacon_analytics WHERE start_time >= '" 
+            + begin + "' AND start_time < '" + end + "' GROUP BY transmitter_id) as visits "
           + "JOIN transmitters as t "
           + "ON visits.transmitter_id = t.transmitter_id) as lp "
         + "ON lg.transmitter_id = lp.transmitter_id ) as f ) as fc");
+
+  query.on("row", function (row, result) {
+    result.addRow(row);
+  });
+
+  query.on("end", function (result) {
+    res.send(result.rows[0].row_to_json);
+    res.end();
+  });
+});
+
+router.get('/aggregate_analytics', function (req, res) {
+  date = req.query.date;
+
+  var query = client.query("SELECT row_to_json(fc) "
+    + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
+    + "FROM (SELECT 'Feature' As type "
+      + ", ST_AsGeoJSON(lg.coordinates)::json As geometry "
+      + ", row_to_json((SELECT l FROM (SELECT transmitter_id, visits, dwell_time_in_sec) As l "
+        + ")) As properties "
+      + "FROM aggregate_analytics As lg WHERE analytics_date = '" + date + "'  ) As f )  As fc;")
 
   query.on("row", function (row, result) {
     result.addRow(row);
@@ -192,7 +215,7 @@ router.get('/paths', function (req, res) {
 
           var dwellEvent = {
             coordinates: [transmitter1.lat, transmitter1.lon],
-            dwellTimeInMillis: transmitter1.end_time - transmitter1.start_time
+            dwellTimeInMillis: transmitter1.dwell_time * 1000
           };
           dwellEvents.push(dwellEvent);
 
@@ -210,7 +233,7 @@ router.get('/paths', function (req, res) {
 
           var dwellEvent = {
             coordinates: [transmitter1.lat, transmitter1.lon],
-            dwellTimeInMillis: transmitter1.end_time - transmitter1.start_time
+            dwellTimeInMillis: transmitter1.dwell_time * 1000
           };
           dwellEvents.push(dwellEvent);
 
