@@ -19,10 +19,8 @@ if(dbconfig) {
   + '/' + dbconfig.db['database'];
 }
 
-console.log(AWS_DATABASE_URL);
-
 var pg = require('pg');
-var database_uri = AWS_DATABASE_URL || process.env.DATABASE_URL || "postgres://geoplots:geoplots@127.0.0.1/geoplots";
+var database_uri = AWS_DATABASE_URL || "postgres://geoplots:geoplots@127.0.0.1/geoplots";
 var client = new pg.Client(database_uri);
 client.connect();
 
