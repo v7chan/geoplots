@@ -1,5 +1,5 @@
 function displayTransmitters(size) {
-  var transmittersJSON = 'http://localhost:3000/transmitters';
+  var transmittersJSON = '/transmitters';
   showSpinner();
   queue().defer(d3.json, transmittersJSON).await(transmittersReady);
 
@@ -40,7 +40,7 @@ function displayTransmitters(size) {
 function displayVisitsForTransmitter(map, transmitter_id) {
   $('#reset').removeClass('hidden');
   
-  var visitsJSON = 'http://localhost:3000/visits/' + transmitter_id;
+  var visitsJSON = '/visits/' + transmitter_id;
 
   showSpinner();
   var timeStart = $.now();

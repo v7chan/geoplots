@@ -21,7 +21,7 @@ function displayVisitsChart() {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  d3.json('http://localhost:3000/data/visits_per_day.json', function(error, data) {
+  d3.json('/data/visits_per_day.json', function(error, data) {
     x.domain(data.map(function(d) { return d.date; }));
     y.domain([0, d3.max(data, function(d) { return d.visits; })]);
 
@@ -80,7 +80,7 @@ function chartDailyVisitsForTransmitter(transmitter_id) {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var visitsJSON = 'http://localhost:3000/daily_visits?transmitter=' + transmitter_id;
+  var visitsJSON = '/daily_visits?transmitter=' + transmitter_id;
   var timeStart = $.now();
 
   d3.json(visitsJSON, function(error, data) {
@@ -144,7 +144,7 @@ function chartHourlyVisits(transmitter_id, date) {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var visitsJSON = 'http://localhost:3000/hourly_visits?transmitter=' + transmitter_id + '&date=' + date;
+  var visitsJSON = '/hourly_visits?transmitter=' + transmitter_id + '&date=' + date;
   var timeStart = $.now();
 
   d3.json(visitsJSON, function(error, data) {

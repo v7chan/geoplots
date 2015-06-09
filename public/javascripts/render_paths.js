@@ -1,5 +1,5 @@
 function displayPaths(receiverId) {
-  var pathJSON = 'http://localhost:3000/paths?receiver=' + receiverId;
+  var pathJSON = '/paths?receiver=' + receiverId;
 
   $('#reset').removeClass('hidden');
   showSpinner();

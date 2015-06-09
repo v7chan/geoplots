@@ -1,5 +1,5 @@
 function displayVisitsOnMap(date) {
-  var visitsPerTransmitterJSON = 'http://localhost:3000/aggregate_analytics?date=' + date;
+  var visitsPerTransmitterJSON = '/aggregate_analytics?date=' + date;
 
   var getRadius = d3.scale.sqrt().domain([0, 5000]).range([0, 25]);
   var getDwellColor = d3.scale.linear().domain([0, 3600]).range(['steelblue', 'brown']);
