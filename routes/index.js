@@ -2,8 +2,16 @@ var express = require('express');
 var router = express.Router();
 var async = require('async');
 
+var dbconfig = require('/srv/www/geoplots/shared/config/opsworks.js');
+var AWS_DATABASE_URL = 'postgres://' 
+  + dbconfig.db['username'] 
+  + dbconfig.db['password'] 
+  + dbconfig.db['host']
+  + ':' + dbconfig.db['port']
+  + '/' + dbconfig.db['database'];
+
 var pg = require('pg');
-var database_uri = process.env.DATABASE_URL || "postgres://geoplots:geoplots@127.0.0.1/geoplots";
+var database_uri = AWS_DATABASE_URL || process.env.DATABASE_URL || "postgres://geoplots:geoplots@127.0.0.1/geoplots";
 var client = new pg.Client(database_uri);
 client.connect();
 
